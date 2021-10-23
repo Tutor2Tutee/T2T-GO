@@ -1,3 +1,4 @@
-# T2T-GO
+## T2T Server - GO
 
-<h3 align="center">T2T Server GoGin Implementaion</h3>
+> A GO gin implementation of Tutor2Tutee Server
+
