@@ -21,11 +21,11 @@
 ├── models
 │   └── student.go
 │   └── teacher.go
-└── routers
+├── routers
 |   ├── router.go
 │   └── student.go
 │   └── teacher.go
-├── main.go
+└── main.go
 ```
 
 ## Installation
