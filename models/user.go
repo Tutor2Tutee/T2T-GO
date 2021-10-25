@@ -6,7 +6,7 @@ type User struct {
 	Nickname  string  `json:"nickname"`
 	Birth     string  `json:"birth"`
 	Point     int     `json:"point"`
-	UserType  string  `json:"userType"`
+	UserType  string  `json:"user_type"`
 	Listening []Class `json:"listening"`
 	Teaching  []Class `json:"teaching"`
 }
