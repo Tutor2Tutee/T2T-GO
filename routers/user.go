@@ -5,11 +5,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func studentRouterInit(r *gin.Engine) {
+func userRouterInit(r *gin.RouterGroup) {
 	//specific Route groups
-	student := r.Group("/student")
+	user := r.Group("/user")
 
 	{
-		student.GET("/", controllers.GetStudent)
+		user.GET("/", controllers.GetUser)
 	}
 }
