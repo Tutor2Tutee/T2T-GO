@@ -8,11 +8,12 @@ import (
 	"os"
 )
 
-// init
+// init will set prefix
 func init() {
 	log.SetPrefix("[MongoDB] ")
 }
 
+// MongoConn will create a connection to mongo database with os environment variable
 func MongoConn() *mongo.Client {
 	credential := options.Credential{
 		Username: os.Getenv("DB_USER"),
