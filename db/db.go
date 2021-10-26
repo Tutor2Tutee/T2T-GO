@@ -5,7 +5,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"os"
 )
 
 // init will set prefix
@@ -13,13 +12,13 @@ func init() {
 	log.SetPrefix("[MongoDB] ")
 }
 
-// MongoConn will create a connection to mongo database with os environment variable
-func MongoConn() *mongo.Client {
+// MongoConn will create a connection to mongo database with given arguments
+func MongoConn(UserId string, Password string, DbUrl string) *mongo.Client {
 	credential := options.Credential{
-		Username: os.Getenv("DB_USER"),
-		Password: os.Getenv("DB_PASS"),
+		Username: UserId,
+		Password: Password,
 	}
-	clientOptions := options.Client().ApplyURI(os.Getenv("DB_URL")).SetAuth(credential)
+	clientOptions := options.Client().ApplyURI(DbUrl).SetAuth(credential)
 
 	client, err := mongo.Connect(context.TODO(), clientOptions)
 	if err != nil {
