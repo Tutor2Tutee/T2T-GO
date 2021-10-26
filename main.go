@@ -1,15 +1,12 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/Tutor2Tutee/T2T-GO/routers"
+)
 
 func main() {
-	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "T2T-GO",
-		})
-	})
+	r := routers.GetRouter()
 
 	// listen and serve on 0.0.0.0:8080
-	router.Run()
+	r.Run()
 }
