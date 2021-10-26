@@ -1,12 +1,12 @@
 package models
 
 type User struct {
-	Email     string  `json:"email"`
-	Password  string  `json:"password"`
-	Nickname  string  `json:"nickname"`
-	Birth     string  `json:"birth"`
+	Email     string  `json:"email" validate:"email"`
+	Password  string  `json:"password" validate:"min=8"`
+	Nickname  string  `json:"nickname" validate:"required"`
+	Birth     string  `json:"birth" validate:"required"`
 	Point     int     `json:"point"`
-	UserType  string  `json:"user_type"`
+	UserType  string  `json:"user_type" validate:"required"`
 	Listening []Class `json:"listening"`
 	Teaching  []Class `json:"teaching"`
 }
