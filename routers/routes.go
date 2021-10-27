@@ -9,10 +9,10 @@ func GetRouter() *gin.Engine {
 	// Engine init
 	router := gin.Default()
 	router.Use(middlewares.CORSMiddleware())
+	r := router.Group("/api")
 
 	// Available Routes
-	studentRouterInit(router)
-	teacherRouterInit(router)
+	userRouterInit(r)
 
 	return router
 }
