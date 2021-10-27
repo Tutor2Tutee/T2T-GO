@@ -5,14 +5,20 @@ import (
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
-	"github.com/go-playground/validator"
+	"github.com/go-playground/validator/v10"
 )
 
 func LoginUser(c *gin.Context) {
 	var User models.User
 
 	// Validate Upcoming Data
-	c.BindJSON(&User)
+	err := c.BindJSON(&User)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 
 	// Check User in Database
 	// *****
@@ -25,7 +31,13 @@ func RegisterUser(c *gin.Context) {
 	var newUser models.User
 
 	// Validate Upcoming Data
-	c.BindJSON(&newUser)
+	err := c.BindJSON(&newUser)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
 	validate := validator.New()
 	if err := validate.Struct(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -58,7 +70,14 @@ func UpdateUserByID(c *gin.Context) {
 
 	// Validate Upcoming Data
 	var newUser models.User
-	c.BindJSON(&newUser)
+	err := c.BindJSON(&newUser)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
 	validate := validator.New()
 	if err := validate.Struct(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
