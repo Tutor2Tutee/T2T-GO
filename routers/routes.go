@@ -13,6 +13,7 @@ func GetRouter() *gin.Engine {
 
 	// Available Routes
 	userRouterInit(r)
+	classesRouterInit(r)
 
 	return router
 }
