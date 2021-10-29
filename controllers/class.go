@@ -2,11 +2,12 @@ package controllers
 
 import (
 	"context"
+	"log"
+	"net/http"
+
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
-	"net/http"
 )
 
 func GetAll(c *gin.Context) {

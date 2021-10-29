@@ -1,17 +1,18 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func LoginUser(c *gin.Context) {
 	var User models.User
 
-	// Validate Upcoming Data
 	err := c.BindJSON(&User)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -21,10 +22,23 @@ func LoginUser(c *gin.Context) {
 	}
 
 	// Check User in Database
-	// *****
+	var foundUser *models.User
+	error := Collections.UserCollection.FindOne(context.Background(), bson.D{{"email", User.Email}}).Decode(&foundUser)
+
+	if error != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": error.Error(),
+		})
+		return
+	}
+
+	if foundUser.Password != User.Password {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Wrong password"})
+		return
+	}
 
 	//Return Response
-	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": User})
+	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser})
 }
 
 func RegisterUser(c *gin.Context) {
@@ -46,11 +60,26 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 
+	// Check if User already exits in Database
+	var existingUser *models.User
+	doesUserExist := Collections.UserCollection.FindOne(context.Background(), bson.D{{"email", newUser.Email}}).Decode(&existingUser)
+
+	if doesUserExist == nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "User already exists with provided email!"})
+		return
+	}
+
 	// Store User in Database
-	// *****
+	result, err := Collections.UserCollection.InsertOne(context.TODO(), newUser)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+	}
 
 	//Return Response
-	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully", "userDetails": newUser})
+	c.JSON(http.StatusCreated, gin.H{"message": "User registered successfully", "userDetails": result})
 }
 
 func GetUserByID(c *gin.Context) {
