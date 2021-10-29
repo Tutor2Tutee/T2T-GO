@@ -14,6 +14,6 @@ func userRouterInit(r *gin.RouterGroup) {
 		user.POST("/login", controllers.LoginUser)
 		user.GET("/:userId", controllers.GetUserByID)
 		user.PATCH("/:userId", controllers.UpdateUserByID)
-		// user.DELETE("/:userId", controllers.DeleteUserByID)
+		user.DELETE("/:userId", controllers.DeleteUserByID)
 	}
 }

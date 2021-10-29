@@ -199,10 +199,24 @@ func UpdateUserByID(c *gin.Context) {
 
 func DeleteUserByID(c *gin.Context) {
 	// Get userID from params
-	// userID := c.Param("userId")
+	userID := c.Param("userId")
 
-	// Check User in Database and delete
-	// *****
+	// Create ObjectID
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid user id",
+		})
+		return
+	}
+
+	res, _ := Collections.UserCollection.DeleteOne(context.Background(), bson.M{"_id": objectId})
+	if res.DeletedCount == 0 {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "No user exists with provided user id.",
+		})
+		return
+	}
 
 	//Return Response
 	c.JSON(http.StatusCreated, gin.H{"message": "Deleted user successfully"})
