@@ -2,12 +2,14 @@ package controllers
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func LoginUser(c *gin.Context) {
@@ -27,12 +29,15 @@ func LoginUser(c *gin.Context) {
 
 	if error != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": error.Error(),
+			"error": "No user exists with provided email.",
 		})
 		return
 	}
 
-	if foundUser.Password != User.Password {
+	isPassSame := bcrypt.CompareHashAndPassword([]byte(foundUser.Password), []byte(User.Password))
+
+	fmt.Println("Is Password Same", isPassSame)
+	if isPassSame != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Wrong password"})
 		return
 	}
@@ -68,6 +73,16 @@ func RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "User already exists with provided email!"})
 		return
 	}
+
+	// Hashing the password
+	bytes, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), 14)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	newUser.Password = string(bytes)
 
 	// Store User in Database
 	result, err := Collections.UserCollection.InsertOne(context.TODO(), newUser)
