@@ -129,18 +129,39 @@ func GetUserByID(c *gin.Context) {
 
 func UpdateUserByID(c *gin.Context) {
 	// Get userID from params
-	// userID := c.Param("userId")
+	userID := c.Param("userId")
 
-	// Validate Upcoming Data
-	var newUser models.User
-	err := c.BindJSON(&newUser)
+	// Create ObjectID
+	objectId, err := primitive.ObjectIDFromHex(userID)
 	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid user id",
+		})
+		return
+	}
+
+	// Check User in Database
+	var foundResult models.User
+	isFoundResult := Collections.UserCollection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&foundResult)
+
+	if isFoundResult != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "No user exists with provided user id.",
+		})
+		return
+	}
+
+	// Get Upcoming Body Data
+	var newUser models.User
+	erro := c.BindJSON(&newUser)
+	if erro != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
 		return
 	}
 
+	// Validate upcoming data
 	validate := validator.New()
 	if err := validate.Struct(&newUser); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -149,11 +170,31 @@ func UpdateUserByID(c *gin.Context) {
 		return
 	}
 
-	// Check User in Database and update
-	// *****
+	bytes, err := bcrypt.GenerateFromPassword([]byte(newUser.Password), 14)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	newUser.Password = string(bytes)
+
+	// Update Data in the database
+	result, updateError := Collections.UserCollection.UpdateOne(
+		context.Background(),
+		bson.M{"_id": objectId},
+		bson.D{{"$set", newUser}},
+	)
+
+	if updateError != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": updateError.Error(),
+		})
+		return
+	}
 
 	//Return Response
-	c.JSON(http.StatusCreated, gin.H{"message": "Updated user successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Updated user successfully", "user": result})
 }
 
 func DeleteUserByID(c *gin.Context) {
