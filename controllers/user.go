@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -91,6 +92,7 @@ func RegisterUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 
 	//Return Response
@@ -99,13 +101,30 @@ func RegisterUser(c *gin.Context) {
 
 func GetUserByID(c *gin.Context) {
 	// Get userID from params
-	// userID := c.Param("userId")
+	userID := c.Param("userId")
 
 	// Check User in Database and return
-	// *****
+	objectId, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid user id",
+		})
+		return
+	}
+
+	// find
+	var user models.User
+	error := Collections.UserCollection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&user)
+
+	if error != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "No user exists with provided email.",
+		})
+		return
+	}
 
 	//Return Response
-	c.JSON(http.StatusCreated, gin.H{"message": "Found user successfully"})
+	c.JSON(http.StatusCreated, gin.H{"message": "Found user successfully", "user": user})
 }
 
 func UpdateUserByID(c *gin.Context) {
