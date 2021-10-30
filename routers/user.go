@@ -11,9 +11,9 @@ func userRouterInit(r *gin.RouterGroup) {
 
 	{
 		user.POST("/register", controllers.RegisterUser)
-		// user.POST("/login", controllers.LoginUser)
-		// user.POST("/:userId", controllers.GetUserByID)
-		// user.PATCH("/:userId", controllers.UpdateUserByID)
-		// user.DELETE("/:userId", controllers.DeleteUserByID)
+		user.POST("/login", controllers.LoginUser)
+		user.GET("/:userId", controllers.GetUserByID)
+		user.PATCH("/:userId", controllers.UpdateUserByID)
+		user.DELETE("/:userId", controllers.DeleteUserByID)
 	}
 }
