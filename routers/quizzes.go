@@ -9,5 +9,6 @@ func quizzesRouterInit(r *gin.RouterGroup) {
 	quizzes := r.Group("/quizzes")
 	{
 		quizzes.POST("/", controllers.CreateQuiz)
+		quizzes.GET("/", controllers.GetAllQuiz)
 	}
 }
