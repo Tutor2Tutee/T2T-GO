@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func CreateQuiz(c *gin.Context) {
@@ -61,4 +62,30 @@ func GetAllQuiz(c *gin.Context) {
 	fmt.Println(result)
 	c.JSON(http.StatusCreated, gin.H{"quiz": result})
 
+}
+
+func GetQuizByID(c *gin.Context) {
+	quizID := c.Param("quizID")
+
+	objectID, err := primitive.ObjectIDFromHex(quizID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid quiz id",
+		})
+		return
+	}
+
+	// find
+	var quiz models.Quiz
+	error := Collections.QuizCollection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&quiz)
+
+	if error != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "No quiz exists with provided email.",
+		})
+		return
+	}
+
+	//Return Response
+	c.JSON(http.StatusCreated, gin.H{"message": "Found quiz successfully", "quiz": quiz})
 }

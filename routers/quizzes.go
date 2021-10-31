@@ -10,5 +10,6 @@ func quizzesRouterInit(r *gin.RouterGroup) {
 	{
 		quizzes.POST("/", controllers.CreateQuiz)
 		quizzes.GET("/", controllers.GetAllQuiz)
+		quizzes.GET("/:quizID", controllers.GetQuizByID)
 	}
 }
