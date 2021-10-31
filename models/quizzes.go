@@ -1,14 +1,12 @@
 package models
 
-import (
-	"go.mongodb.org/mongo-driver/bson/primitive"
-)
+import "go.mongodb.org/mongo-driver/bson/primitive"
 
 type Quiz struct {
 	Title     string             `json:"title" validate:"required"`
 	Created   string             `json:"created" validate:"required"`
 	Creator   primitive.ObjectID `json:"creator" validate:"required"`
-	Questions []Quiz             `json:"questions" validate:"required"`
+	Questions []Question         `json:"questions" validate:"required"`
 }
 
 type Question struct {

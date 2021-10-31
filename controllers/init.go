@@ -8,6 +8,7 @@ import (
 type Collection struct {
 	ClassCollection *mongo.Collection
 	UserCollection  *mongo.Collection
+	QuizCollection  *mongo.Collection
 }
 
 var Collections Collection
@@ -16,4 +17,5 @@ func init() {
 	Resource := db.GetResource()
 	Collections.ClassCollection = Resource.DB.Collection("class")
 	Collections.UserCollection = Resource.DB.Collection("user")
+	Collections.QuizCollection = Resource.DB.Collection("quiz")
 }
