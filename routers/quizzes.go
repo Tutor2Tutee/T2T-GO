@@ -12,5 +12,6 @@ func quizzesRouterInit(r *gin.RouterGroup) {
 		quizzes.GET("/", controllers.GetAllQuiz)
 		quizzes.GET("/:quizID", controllers.GetQuizByID)
 		quizzes.GET("/creator/:creatorID", controllers.GetQuizByCreatorID)
+		quizzes.DELETE("/:quizID", controllers.DeleteQuizByID)
 	}
 }
