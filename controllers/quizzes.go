@@ -89,3 +89,30 @@ func GetQuizByID(c *gin.Context) {
 	//Return Response
 	c.JSON(http.StatusCreated, gin.H{"message": "Found quiz successfully", "quiz": quiz})
 }
+
+func GetQuizByCreatorID(c *gin.Context) {
+	creatorID := c.Param("creatorID")
+
+	objectID, err := primitive.ObjectIDFromHex(creatorID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "invalid creator id",
+		})
+		return
+	}
+
+	// find
+	var quizzes []models.Quiz
+	r, error := Collections.QuizCollection.Find(context.Background(), bson.M{"creator": objectID})
+	r.All(context.Background(), &quizzes)
+
+	if error != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error": "No quizzes exists with provided creator ID.",
+		})
+		return
+	}
+
+	//Return Response
+	c.JSON(http.StatusCreated, gin.H{"message": "Found quizzes successfully", "quiz": quizzes})
+}
