@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
@@ -84,6 +85,9 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 	newUser.Password = string(bytes)
+	newUser.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	newUser.Teaching = []models.Class{}
+	newUser.Listening = []models.Class{}
 
 	// Store User in Database
 	result, err := Collections.UserCollection.InsertOne(context.TODO(), newUser)

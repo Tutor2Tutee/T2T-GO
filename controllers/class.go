@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
@@ -39,6 +40,8 @@ func Create(c *gin.Context) {
 			"error": err.Error(),
 		})
 	}
+	class.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	class.Listener = []models.User{}
 
 	result, err := Collections.ClassCollection.InsertOne(context.TODO(), class)
 	if err != nil {
