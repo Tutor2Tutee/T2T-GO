@@ -14,6 +14,7 @@ func GetRouter() *gin.Engine {
 	// Available Routes
 	userRouterInit(r)
 	classesRouterInit(r)
+	quizzesRouterInit(r)
 
 	return router
 }
