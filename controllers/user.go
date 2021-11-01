@@ -68,10 +68,9 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	// Check if User already exits in Database
-	var existingUser *models.User
-	doesUserExist := Collections.UserCollection.FindOne(context.Background(), bson.D{{"email", newUser.Email}}).Decode(&existingUser)
+	userCount, _ := Collections.UserCollection.CountDocuments(context.TODO(), bson.M{"email": newUser.Email})
 
-	if doesUserExist == nil {
+	if userCount > 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "User already exists with provided email!"})
 		return
 	}
