@@ -17,6 +17,7 @@ func GetAll(c *gin.Context) {
 		c.JSON(http.StatusConflict, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 	var classes []models.Class
 
@@ -39,6 +40,7 @@ func Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 	class.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	class.Listener = []models.User{}
@@ -48,6 +50,7 @@ func Create(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
