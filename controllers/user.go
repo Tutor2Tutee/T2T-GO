@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/Tutor2Tutee/T2T-GO/helpers"
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -43,8 +44,11 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 
+	// Generate Token
+	token := helpers.GenerateAllTokens(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
+
 	//Return Response
-	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser})
+	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser, "tokenId": token})
 }
 
 func RegisterUser(c *gin.Context) {

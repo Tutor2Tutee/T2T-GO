@@ -49,6 +49,7 @@ func CreateQuiz(c *gin.Context) {
 }
 
 func GetAllQuiz(c *gin.Context) {
+	fmt.Println("Headers", c.Request.Header)
 	var result []models.Quiz
 
 	r, err := Collections.QuizCollection.Find(context.Background(), bson.D{})
@@ -59,7 +60,6 @@ func GetAllQuiz(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(result)
 	c.JSON(http.StatusCreated, gin.H{"quiz": result})
 
 }
