@@ -2,11 +2,9 @@ package db
 
 import (
 	"context"
-	_ "github.com/joho/godotenv/autoload"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"log"
-	"os"
 	"time"
 )
 
@@ -22,16 +20,17 @@ func init() {
 }
 
 // GetResource will create Resource of given db server
-func GetResource() *Resource {
-	UserId := os.Getenv("DB_USER")
-	Password := os.Getenv("DB_PASS")
-	DbUrl := os.Getenv("DB_URL")
-	DbName := os.Getenv("DB_NAME")
-	credential := options.Credential{
-		Username: UserId,
-		Password: Password,
+func GetResource(UserId string, Password string, DbUrl string, DbName string) *Resource {
+	var clientOptions *options.ClientOptions
+	if UserId != "" {
+		credential := options.Credential{
+			Username: UserId,
+			Password: Password,
+		}
+		clientOptions = options.Client().ApplyURI(DbUrl).SetAuth(credential)
+	} else {
+		clientOptions = options.Client().ApplyURI(DbUrl)
 	}
-	clientOptions := options.Client().ApplyURI(DbUrl).SetAuth(credential)
 
 	mClient, err := mongo.NewClient(clientOptions)
 	if err != nil {
@@ -42,7 +41,5 @@ func GetResource() *Resource {
 	if err := mClient.Connect(ctx); err != nil {
 		log.Fatalln(err.Error())
 	}
-
-	log.Println("MongoDB connected")
 	return &Resource{DB: mClient.Database(DbName)}
 }
