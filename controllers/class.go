@@ -19,7 +19,7 @@ func GetAll(c *gin.Context) {
 		})
 		return
 	}
-	var classes []models.Class
+	var classes = make([]models.Class, 0)
 
 	for cur.Next(context.TODO()) {
 		var class models.Class
@@ -54,6 +54,6 @@ func Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"result": result,
+		"createdId": result.InsertedID,
 	})
 }

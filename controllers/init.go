@@ -13,8 +13,8 @@ type Collection struct {
 
 var Collections Collection
 
-func init() {
-	Resource := db.GetResource()
+func Start(database *db.Resource) {
+	Resource := database
 	Collections.ClassCollection = Resource.DB.Collection("class")
 	Collections.UserCollection = Resource.DB.Collection("user")
 	Collections.QuizCollection = Resource.DB.Collection("quiz")
