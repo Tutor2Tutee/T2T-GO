@@ -17,7 +17,7 @@ func GetAll(c *gin.Context) {
 			"error": err.Error(),
 		})
 	}
-	var classes []models.Class
+	var classes = make([]models.Class, 0)
 
 	for cur.Next(context.TODO()) {
 		var class models.Class
