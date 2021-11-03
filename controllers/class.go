@@ -48,6 +48,6 @@ func Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{
-		"result": result,
+		"createdId": result.InsertedID,
 	})
 }
