@@ -8,7 +8,7 @@ import (
 func classesRouterInit(r *gin.RouterGroup) {
 	classes := r.Group("/classes")
 	{
-		classes.GET("/", controllers.GetAll)
-		classes.POST("/", controllers.Create)
+		classes.GET("", controllers.GetAll)
+		classes.POST("", controllers.Create)
 	}
 }
