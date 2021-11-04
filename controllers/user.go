@@ -44,7 +44,8 @@ func LoginUser(c *gin.Context) {
 		return
 	}
 	// Generate Token
-	token, refreshToken := helpers.GenerateAllTokens(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
+	token := helpers.GenerateAccessToken(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
+	refreshToken := helpers.GenerateRefreshToken(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
 
 	//Return Response
 	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser, "access_token": token, "refresh_token": refreshToken})

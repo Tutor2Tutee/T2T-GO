@@ -12,35 +12,40 @@ type SignedDetails struct {
 	Email     string
 	Nickname  string
 	UserID    string
-	ExpiresIn int64
+	ExpiresAt int64
 	jwt.StandardClaims
 }
 
-func GenerateAllTokens(email string, nickname string, userID string) (string, string) {
+func GenerateAccessToken(email string, nickname string, userID string) string {
 	claims := &SignedDetails{
 		Email:     email,
 		Nickname:  nickname,
 		UserID:    userID,
-		ExpiresIn: time.Now().Local().Add(time.Hour * time.Duration(24)).Unix(),
+		ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(24)).Unix(),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(24)).Unix(),
 		},
 	}
 
+	token, _ := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
+
+	return token
+}
+
+func GenerateRefreshToken(email string, nickname string, userID string) string {
 	refreshClaims := &SignedDetails{
 		Email:     email,
 		Nickname:  nickname,
 		UserID:    userID,
-		ExpiresIn: time.Now().Local().Add(time.Hour * time.Duration(172)).Unix(),
+		ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(172)).Unix(),
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Local().Add(time.Hour * time.Duration(172)).Unix(),
 		},
 	}
 
-	token, _ := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 	refreshToken, _ := jwt.NewWithClaims(jwt.SigningMethodHS256, refreshClaims).SignedString([]byte(os.Getenv("JWT_SECRET_KEY")))
 
-	return token, refreshToken
+	return refreshToken
 }
 
 func VerifyToken(token string) (*jwt.Token, error) {
