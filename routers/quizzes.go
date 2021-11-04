@@ -2,7 +2,6 @@ package routers
 
 import (
 	"github.com/Tutor2Tutee/T2T-GO/controllers"
-	"github.com/Tutor2Tutee/T2T-GO/middlewares"
 	"github.com/gin-gonic/gin"
 )
 
