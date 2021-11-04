@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Tutor2Tutee/T2T-GO/helpers"
 	"github.com/Tutor2Tutee/T2T-GO/models"
@@ -71,10 +72,9 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	// Check if User already exits in Database
-	var existingUser *models.User
-	doesUserExist := Collections.UserCollection.FindOne(context.Background(), bson.D{{"email", newUser.Email}}).Decode(&existingUser)
+	userCount, _ := Collections.UserCollection.CountDocuments(context.TODO(), bson.M{"email": newUser.Email})
 
-	if doesUserExist == nil {
+	if userCount > 0 {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "User already exists with provided email!"})
 		return
 	}
@@ -88,6 +88,9 @@ func RegisterUser(c *gin.Context) {
 		return
 	}
 	newUser.Password = string(bytes)
+	newUser.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+	newUser.Teaching = []models.Class{}
+	newUser.Listening = []models.Class{}
 
 	// Store User in Database
 	result, err := Collections.UserCollection.InsertOne(context.TODO(), newUser)

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"time"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
@@ -32,6 +33,7 @@ func CreateQuiz(c *gin.Context) {
 		})
 		return
 	}
+	newQuiz.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 
 	// Create Quiz in DB
 	result, err := Collections.QuizCollection.InsertOne(context.Background(), newQuiz)

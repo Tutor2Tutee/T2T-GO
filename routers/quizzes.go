@@ -9,8 +9,8 @@ import (
 func quizzesRouterInit(r *gin.RouterGroup) {
 	quizzes := r.Group("/quizzes")
 	{
-		quizzes.POST("/", controllers.CreateQuiz)
-		quizzes.GET("/", middlewares.JWTAuthenticationMiddleware, controllers.GetAllQuiz)
+		quizzes.POST("", controllers.CreateQuiz)
+		quizzes.GET("", controllers.GetAllQuiz)
 		quizzes.GET("/:quizID", controllers.GetQuizByID)
 		quizzes.GET("/creator/:creatorID", controllers.GetQuizByCreatorID)
 		quizzes.DELETE("/:quizID", controllers.DeleteQuizByID)
