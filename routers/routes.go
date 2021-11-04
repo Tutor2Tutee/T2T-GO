@@ -15,6 +15,7 @@ func GetRouter() *gin.Engine {
 	userRouterInit(r)
 	classesRouterInit(r)
 	quizzesRouterInit(r)
+	refreshTokenRouterInit(r)
 
 	return router
 }
