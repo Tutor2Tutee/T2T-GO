@@ -3,8 +3,8 @@ package middlewares
 import (
 	"fmt"
 	"net/http"
-	"os"
 
+	"github.com/Tutor2Tutee/T2T-GO/helpers"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
@@ -16,17 +16,11 @@ func JWTAuthenticationMiddleware(c *gin.Context) {
 		return
 	}
 
-	var mySigningKey = []byte(os.Getenv("JWT_SECRET_KEY"))
-
-	token, err := jwt.Parse(c.Request.Header["Token"][0], func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("There was an error in parsing")
-		}
-		return mySigningKey, nil
-	})
+	token, err := helpers.VerifyToken(c.Request.Header.Get("Token"))
 
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, gin.H{"message": "No token found in the headers"})
+		// in case token is expired
+		c.JSON(http.StatusUnauthorized, gin.H{"message": err.Error()})
 		c.Abort()
 		return
 	}

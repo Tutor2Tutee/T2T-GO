@@ -43,12 +43,11 @@ func LoginUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Wrong password"})
 		return
 	}
-
 	// Generate Token
-	token := helpers.GenerateAllTokens(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
+	token, refreshToken := helpers.GenerateAllTokens(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
 
 	//Return Response
-	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser, "tokenId": token})
+	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser, "access_token": token, "refresh_token": refreshToken})
 }
 
 func RegisterUser(c *gin.Context) {
