@@ -18,6 +18,7 @@ func GetRouter(database *db.Resource) *gin.Engine {
 	userRouterInit(r)
 	classesRouterInit(r)
 	quizzesRouterInit(r)
+	refreshTokenRouterInit(r)
 
 	return router
 }

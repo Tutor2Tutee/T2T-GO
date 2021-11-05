@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/Tutor2Tutee/T2T-GO/helpers"
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
@@ -43,9 +44,12 @@ func LoginUser(c *gin.Context) {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "Wrong password"})
 		return
 	}
+	// Generate Token
+	token := helpers.GenerateAccessToken(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
+	refreshToken := helpers.GenerateRefreshToken(foundUser.Email, foundUser.Nickname, foundUser.ID.Hex())
 
 	//Return Response
-	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser})
+	c.JSON(http.StatusCreated, gin.H{"message": "Login successfully", "userDetails": foundUser, "access_token": token, "refresh_token": refreshToken})
 }
 
 func RegisterUser(c *gin.Context) {

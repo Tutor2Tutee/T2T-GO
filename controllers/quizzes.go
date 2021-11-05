@@ -61,7 +61,6 @@ func GetAllQuiz(c *gin.Context) {
 		})
 		return
 	}
-	fmt.Println(result)
 	c.JSON(http.StatusCreated, gin.H{"quiz": result})
 
 }
