@@ -5,8 +5,8 @@ import (
 	"net/http"
 
 	"github.com/Tutor2Tutee/T2T-GO/helpers"
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt"
 )
 
 func JWTAuthenticationMiddleware(c *gin.Context) {
