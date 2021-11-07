@@ -3,6 +3,7 @@ package controllers
 import (
 	"context"
 	"fmt"
+	"github.com/Tutor2Tutee/T2T-GO/repository"
 	"net/http"
 	"time"
 
@@ -17,8 +18,7 @@ func CreateQuiz(c *gin.Context) {
 	var newQuiz models.Quiz
 
 	// Get Request Data
-	err := c.BindJSON(&newQuiz)
-	if err != nil {
+	if err := c.BindJSON(&newQuiz); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -36,7 +36,7 @@ func CreateQuiz(c *gin.Context) {
 	newQuiz.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 
 	// Create Quiz in DB
-	result, err := Collections.QuizCollection.InsertOne(context.Background(), newQuiz)
+	result, err := repository.QuizCollection.Create(newQuiz)
 
 	fmt.Println("Result", result)
 
@@ -47,14 +47,11 @@ func CreateQuiz(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Quiz created successfully", "quiz": newQuiz})
+	c.JSON(http.StatusCreated, gin.H{"createdId": result.InsertedID, "quiz": newQuiz})
 }
 
 func GetAllQuiz(c *gin.Context) {
-	var result []models.Quiz
-
-	r, err := Collections.QuizCollection.Find(context.Background(), bson.D{})
-	r.All(context.Background(), &result)
+	result, err := repository.QuizCollection.GetAllQuiz()
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
@@ -77,12 +74,11 @@ func GetQuizByID(c *gin.Context) {
 	}
 
 	// find
-	var quiz models.Quiz
-	error := Collections.QuizCollection.FindOne(context.Background(), bson.M{"_id": objectID}).Decode(&quiz)
-
-	if error != nil {
+	quiz, err := repository.QuizCollection.GetQuizById(objectID)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": "No quiz exists with provided email.",
+			"error":  "No quiz exists with provided email.",
+			"result": err.Error(),
 		})
 		return
 	}
@@ -103,11 +99,9 @@ func GetQuizByCreatorID(c *gin.Context) {
 	}
 
 	// find
-	var quizzes []models.Quiz
-	r, error := Collections.QuizCollection.Find(context.Background(), bson.M{"creator": objectID})
-	r.All(context.Background(), &quizzes)
 
-	if error != nil {
+	quizzes, err := repository.QuizCollection.GetQuizByCreatorID(objectID)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "No quizzes exists with provided creator ID.",
 		})
@@ -131,7 +125,7 @@ func DeleteQuizByID(c *gin.Context) {
 		return
 	}
 
-	res, _ := Collections.QuizCollection.DeleteOne(context.Background(), bson.M{"_id": objectId})
+	res, _ := repository.QuizCollection.DeleteOne(context.Background(), bson.M{"_id": objectId})
 	if res.DeletedCount == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "No user exists with provided user id.",
