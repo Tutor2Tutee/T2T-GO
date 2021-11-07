@@ -1,39 +1,45 @@
 package controllers
 
 import (
-	"context"
-	"log"
+	"github.com/Tutor2Tutee/T2T-GO/repository"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"net/http"
 	"time"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
-func GetAll(c *gin.Context) {
-	cur, err := Collections.ClassCollection.Find(context.TODO(), bson.D{})
-	if err != nil {
-		c.JSON(http.StatusConflict, gin.H{
-			"error": err.Error(),
-		})
-		return
-	}
-	var classes = make([]models.Class, 0)
+type ClassController struct {
+}
 
-	for cur.Next(context.TODO()) {
-		var class models.Class
-		err := cur.Decode(&class)
-		if err != nil {
-			log.Println(err)
-		}
-		classes = append(classes, class)
+func (CC ClassController) GetAll(c *gin.Context) {
+	classes, err := repository.ClassCollection.FindAllClasses()
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "error while querying FindAllClasses",
+		})
 	}
 
 	c.JSON(http.StatusOK, classes)
 }
 
-func Create(c *gin.Context) {
+func (CC ClassController) GetOne(c *gin.Context) {
+	classID, _ := primitive.ObjectIDFromHex(c.Param("cid"))
+
+	class, err := repository.ClassCollection.FindOneById(classID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, class)
+}
+
+func (CC ClassController) Create(c *gin.Context) {
 	var class models.Class
 	err := c.BindJSON(&class)
 	if err != nil {
@@ -45,7 +51,7 @@ func Create(c *gin.Context) {
 	class.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
 	class.Listener = []models.User{}
 
-	result, err := Collections.ClassCollection.InsertOne(context.TODO(), class)
+	result, err := repository.ClassCollection.InsertClass(class)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
