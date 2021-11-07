@@ -1,15 +1,14 @@
 package controllers
 
 import (
-	"context"
 	"fmt"
+	"github.com/Tutor2Tutee/T2T-GO/repository"
 	"net/http"
 	"time"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
-	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,10 +25,8 @@ func LoginUser(c *gin.Context) {
 	}
 
 	// Check User in Database
-	var foundUser *models.User
-	error := Collections.UserCollection.FindOne(context.Background(), bson.D{{"email", User.Email}}).Decode(&foundUser)
-
-	if error != nil {
+	foundUser, err := repository.UserCollection.FindUserByEmail(User.Email)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "No user exists with provided email.",
 		})
@@ -68,9 +65,10 @@ func RegisterUser(c *gin.Context) {
 	}
 
 	// Check if User already exits in Database
-	userCount, _ := Collections.UserCollection.CountDocuments(context.TODO(), bson.M{"email": newUser.Email})
-
-	if userCount > 0 {
+	//var existingUser *models.User
+	//doesUserExist := repository.UserCollection.FindOne(context.Background(), bson.D{{"email", newUser.Email}}).Decode(&existingUser)
+	_, err = repository.UserCollection.FindUserByEmail(newUser.Email)
+	if err == nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"message": "User already exists with provided email!"})
 		return
 	}
@@ -89,7 +87,7 @@ func RegisterUser(c *gin.Context) {
 	newUser.Listening = []models.Class{}
 
 	// Store User in Database
-	result, err := Collections.UserCollection.InsertOne(context.TODO(), newUser)
+	result, err := repository.UserCollection.InsertUser(&newUser)
 
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -116,12 +114,13 @@ func GetUserByID(c *gin.Context) {
 	}
 
 	// find
-	var user models.User
-	error := Collections.UserCollection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&user)
+	//var user models.User
+	//error := repository.UserCollection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&user)
 
-	if error != nil {
+	user, err := repository.UserCollection.FindUserByID(objectId)
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
-			"error": "No user exists with provided email.",
+			"error": "No user exists with provided id.",
 		})
 		return
 	}
@@ -144,10 +143,10 @@ func UpdateUserByID(c *gin.Context) {
 	}
 
 	// Check User in Database
-	var foundResult models.User
-	isFoundResult := Collections.UserCollection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&foundResult)
+	//var foundResult models.User
+	_, err = repository.UserCollection.FindUserByID(objectId)
 
-	if isFoundResult != nil {
+	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "No user exists with provided user id.",
 		})
@@ -156,8 +155,8 @@ func UpdateUserByID(c *gin.Context) {
 
 	// Get Upcoming Body Data
 	var newUser models.User
-	erro := c.BindJSON(&newUser)
-	if erro != nil {
+	err = c.BindJSON(&newUser)
+	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -183,12 +182,7 @@ func UpdateUserByID(c *gin.Context) {
 	newUser.Password = string(bytes)
 
 	// Update Data in the database
-	result, updateError := Collections.UserCollection.UpdateOne(
-		context.Background(),
-		bson.M{"_id": objectId},
-		bson.D{{"$set", newUser}},
-	)
-
+	result, updateError := repository.UserCollection.UpdateUserByID(objectId, newUser)
 	if updateError != nil {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": updateError.Error(),
@@ -213,7 +207,7 @@ func DeleteUserByID(c *gin.Context) {
 		return
 	}
 
-	res, _ := Collections.UserCollection.DeleteOne(context.Background(), bson.M{"_id": objectId})
+	res, _ := repository.UserCollection.DeleteUserByID(objectId)
 	if res.DeletedCount == 0 {
 		c.JSON(http.StatusNotFound, gin.H{
 			"error": "No user exists with provided user id.",
