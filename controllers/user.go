@@ -118,6 +118,14 @@ func GetUserByID(c *gin.Context) {
 		return
 	}
 
+	// JWT Verification
+	isAuthenticated, _ := helpers.VerifyUserAuthUsingJWT(c, userID)
+
+	if !isAuthenticated {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized User"})
+		return
+	}
+
 	// find
 	//var user models.User
 	//error := repository.UserCollection.FindOne(context.Background(), bson.M{"_id": objectId}).Decode(&user)
@@ -144,6 +152,14 @@ func UpdateUserByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid user id",
 		})
+		return
+	}
+
+	// JWT Verification
+	isAuthenticated, _ := helpers.VerifyUserAuthUsingJWT(c, userID)
+
+	if !isAuthenticated {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized User"})
 		return
 	}
 
@@ -209,6 +225,14 @@ func DeleteUserByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid user id",
 		})
+		return
+	}
+
+	// JWT Verification
+	isAuthenticated, _ := helpers.VerifyUserAuthUsingJWT(c, userID)
+
+	if !isAuthenticated {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized User"})
 		return
 	}
 

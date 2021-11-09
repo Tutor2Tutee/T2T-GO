@@ -68,19 +68,15 @@ func VerifyToken(token string) (*jwt.Token, error) {
 	return t, err
 }
 
-func VerifyUserAuthUsingJWT(c *gin.Context, userid, nickname, email string) (bool, JWTVerifiedData) {
-	jwtUserEmail := c.Request.Header.Get("UserEmail")
+func VerifyUserAuthUsingJWT(c *gin.Context, userid string) (bool, JWTVerifiedData) {
 	jwtUserID := c.Request.Header.Get("UserID")
-	jwtUserNickname := c.Request.Header.Get("UserNickname")
 
-	if jwtUserEmail != email || jwtUserID != userid || jwtUserNickname != nickname {
+	if jwtUserID != userid {
 		return false, JWTVerifiedData{}
 	}
 
 	data := JWTVerifiedData{
-		Email:    email,
-		UserID:   userid,
-		Nickname: nickname,
+		UserID: userid,
 	}
 
 	return true, data
