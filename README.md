@@ -2,30 +2,45 @@
 
 > A GO gin implementation of Tutor2Tutee Server
 
-![](header.jpeg)
+![](assets/header.png)
 
 ### Folder Structure
 ```
 .
-├── README.md
-├── header.jpeg
+├── assets
+│   └── header.jpeg
 ├── controllers
-│   └── student.go
-│   └── teacher.go
+│   └── class.go
+│   └── quizzes.go
+│   └── refresh_token.go
+│   └── user.go
 ├── db
 │   └── db.go
+├── helpers
+│   └── tokenHelper.go
 ├── middlewares
 │   └── cors.go
-├── tests
-│   └── test.go
+│   └── jwt_auth.go
 ├── models
-│   └── student.go
-│   └── teacher.go
+│   └── class.go
+│   └── quizzes.go
+│   └── user.go
+├── repository
+|   ├── classRepository.go
+│   └── quizRepository.go
+│   └── userRepository.go
+│   └── init.go
 ├── routers
-|   ├── router.go
-│   └── student.go
-│   └── teacher.go
-└── main.go
+|   ├── classes.go
+|   ├── quizzes.go
+|   ├── routes.go
+│   └── user.go
+├── tests
+│   └── mockDatabase.go
+├── main.go
+├── README.md
+├── go.mod
+└── go.sum
 ```
 
 ## Installation
@@ -34,6 +49,12 @@ Install the `go.mod` dependencies using the following command
 
 ```
 go build
+```
+
+or using
+
+```
+go get
 ```
 
 
