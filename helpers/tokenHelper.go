@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -59,4 +60,16 @@ func VerifyToken(token string) (*jwt.Token, error) {
 	})
 
 	return t, err
+}
+
+func VerifyUserAuthUsingJWT(c *gin.Context, userid, nickname, email string) bool {
+	jwtUserEmail := c.Request.Header.Get("UserEmail")
+	jwtUserID := c.Request.Header.Get("UserID")
+	jwtUserNickname := c.Request.Header.Get("UserNickname")
+
+	if jwtUserEmail != email || jwtUserID != userid || jwtUserNickname != nickname {
+		return false
+	}
+
+	return true
 }

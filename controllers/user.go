@@ -2,9 +2,10 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/Tutor2Tutee/T2T-GO/repository"
 	"net/http"
 	"time"
+
+	"github.com/Tutor2Tutee/T2T-GO/repository"
 
 	"github.com/Tutor2Tutee/T2T-GO/helpers"
 	"github.com/Tutor2Tutee/T2T-GO/models"
