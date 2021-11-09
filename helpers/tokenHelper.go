@@ -17,6 +17,12 @@ type SignedDetails struct {
 	jwt.StandardClaims
 }
 
+type JWTVerifiedData struct {
+	Email    string
+	Nickname string
+	UserID   string
+}
+
 func GenerateAccessToken(email string, nickname string, userID string) string {
 	claims := &SignedDetails{
 		Email:     email,
@@ -62,14 +68,20 @@ func VerifyToken(token string) (*jwt.Token, error) {
 	return t, err
 }
 
-func VerifyUserAuthUsingJWT(c *gin.Context, userid, nickname, email string) bool {
+func VerifyUserAuthUsingJWT(c *gin.Context, userid, nickname, email string) (bool, JWTVerifiedData) {
 	jwtUserEmail := c.Request.Header.Get("UserEmail")
 	jwtUserID := c.Request.Header.Get("UserID")
 	jwtUserNickname := c.Request.Header.Get("UserNickname")
 
 	if jwtUserEmail != email || jwtUserID != userid || jwtUserNickname != nickname {
-		return false
+		return false, JWTVerifiedData{}
 	}
 
-	return true
+	data := JWTVerifiedData{
+		Email:    email,
+		UserID:   userid,
+		Nickname: nickname,
+	}
+
+	return true, data
 }
