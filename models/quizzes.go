@@ -2,15 +2,13 @@ package models
 
 import (
 	"time"
-
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type Quiz struct {
-	Title      string             `json:"title" validate:"required"`
-	Created_At time.Time          `json:"created_at"`
-	Creator    primitive.ObjectID `json:"creator" validate:"required"`
-	Questions  []Question         `json:"questions" validate:"required"`
+	Title      string     `json:"title" validate:"required"`
+	Created_At time.Time  `json:"created_at"`
+	Creator    string     `json:"creator" validate:"required"`
+	Questions  []Question `json:"questions" validate:"required"`
 }
 
 type Question struct {

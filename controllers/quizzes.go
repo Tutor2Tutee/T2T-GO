@@ -3,9 +3,11 @@ package controllers
 import (
 	"context"
 	"fmt"
-	"github.com/Tutor2Tutee/T2T-GO/repository"
 	"net/http"
 	"time"
+
+	"github.com/Tutor2Tutee/T2T-GO/helpers"
+	"github.com/Tutor2Tutee/T2T-GO/repository"
 
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"github.com/gin-gonic/gin"
@@ -34,6 +36,14 @@ func CreateQuiz(c *gin.Context) {
 		return
 	}
 	newQuiz.Created_At, _ = time.Parse(time.RFC3339, time.Now().Format(time.RFC3339))
+
+	// JWT Verification
+	isAuthenticated, _ := helpers.VerifyUserAuthUsingJWT(c, newQuiz.Creator)
+
+	if !isAuthenticated {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized User"})
+		return
+	}
 
 	// Create Quiz in DB
 	result, err := repository.QuizCollection.Create(newQuiz)
@@ -122,6 +132,24 @@ func DeleteQuizByID(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "invalid user id",
 		})
+		return
+	}
+
+	// Find Quiz
+	quiz, err := repository.QuizCollection.GetQuizById(objectId)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{
+			"error":  "No quiz exists with provided email.",
+			"result": err.Error(),
+		})
+		return
+	}
+
+	// JWT Verification
+	isAuthenticated, _ := helpers.VerifyUserAuthUsingJWT(c, quiz.Creator)
+
+	if !isAuthenticated {
+		c.JSON(http.StatusUnauthorized, gin.H{"message": "Unauthorized User"})
 		return
 	}
 

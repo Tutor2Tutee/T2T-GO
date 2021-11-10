@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+
 	"github.com/Tutor2Tutee/T2T-GO/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -49,7 +50,7 @@ func (c quizCollection) GetQuizById(ObjectID primitive.ObjectID) (*models.Quiz, 
 
 func (c quizCollection) GetQuizByCreatorID(creatorID primitive.ObjectID) ([]models.Quiz, error) {
 	var quizzes []models.Quiz
-	result, err := c.Find(context.TODO(), bson.D{{"creator", creatorID}})
+	result, err := c.Find(context.TODO(), bson.D{{"creator", creatorID.Hex()}})
 	if err != nil {
 		return nil, err
 	}

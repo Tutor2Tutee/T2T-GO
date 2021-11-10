@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt"
 )
 
@@ -14,6 +15,12 @@ type SignedDetails struct {
 	UserID    string
 	ExpiresAt int64
 	jwt.StandardClaims
+}
+
+type JWTVerifiedData struct {
+	Email    string
+	Nickname string
+	UserID   string
 }
 
 func GenerateAccessToken(email string, nickname string, userID string) string {
@@ -59,4 +66,18 @@ func VerifyToken(token string) (*jwt.Token, error) {
 	})
 
 	return t, err
+}
+
+func VerifyUserAuthUsingJWT(c *gin.Context, userid string) (bool, JWTVerifiedData) {
+	jwtUserID := c.Request.Header.Get("UserID")
+
+	if jwtUserID != userid {
+		return false, JWTVerifiedData{}
+	}
+
+	data := JWTVerifiedData{
+		UserID: userid,
+	}
+
+	return true, data
 }
